@@ -1,20 +1,6 @@
 version: "3.8"
 
 services:
-  # tg_bot:
-  #   image: tg_bot_image
-  #   container_name: tg_bot_container
-  #   build:
-  #     context: ./bot
-  #   environment:
-  #     BOT_TOKEN: $BOT_TOKEN
-  #     API_URL: http://api:8000
-  #   volumes:
-  #     - ./resources/bot:/app/bot_data
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-
   ui:
     image: ui_image
     container_name: ui_container
