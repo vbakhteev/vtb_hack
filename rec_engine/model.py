@@ -42,6 +42,13 @@ class NewsTMModel:
                                                              nr_bins=nr_bins)
         return topics_over_time
 
+    def find_topics(self, search_term, thrsh=0.5, top_n=5):
+        topics, probs = self.topic_model.find_topics(search_term, top_n=top_n)
+        topic_ids = [topic for topic, prob in zip(topics, probs) if prob > thrsh]
+        topics_labels = self.topic_model.generate_topic_labels()
+        topic_names = [topics_labels[topic_id+1] for topic_id in topic_ids]
+        return search_term, topic_names
+
     def save(self, model_path):
         self.topic_model.save(model_path)
 

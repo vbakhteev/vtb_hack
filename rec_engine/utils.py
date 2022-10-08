@@ -17,15 +17,17 @@ class DataLoader:
     def get_publications_over_period_by(self, sources: tuple, date_start, date_end):
         if len(sources) > 1:
             data = pd.read_sql(f"""
-            select id, title, summary, text, publication_datetime, url, topic_id
+            select ti.id, title, summary, text, publication_datetime, url, topic_name
             from publications
+            join topic_info ti on publications.topic_id = ti.id
             where source in {sources}
                   and publication_datetime >= '{date_start}' and publication_datetime < '{date_end}'
             """, self.dbConnection)
         else:
             data = pd.read_sql(f"""
-                        select id, title, summary, text, publication_datetime , url, topic_id  
+                        select ti.id, title, summary, text, publication_datetime, url, topic_name
                         from publications
+                        join topic_info ti on publications.topic_id = ti.id
                         where source='{sources[0]}'
                               and publication_datetime >= '{date_start}' and publication_datetime < '{date_end}'
                         """, self.dbConnection)
