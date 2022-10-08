@@ -36,7 +36,3 @@ cd ../rec_engine
 bash build_docker_tagging.sh
 bash run_docker_tagging.sh
 ```
-
-
-
-
