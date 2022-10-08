@@ -19,6 +19,7 @@ lxml==4.9.1
 parsel==1.6.0
 Protego==0.2.1
 proxyscrape==0.3.0
+psycopg2==2.9.4
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
@@ -34,6 +35,7 @@ scrapy-user-agents==0.1.1
 service-identity==21.1.0
 six==1.16.0
 soupsieve==2.3.2.post1
+SQLAlchemy==1.4.41
 tldextract==3.4.0
 Twisted==22.8.0
 typing-extensions==4.4.0

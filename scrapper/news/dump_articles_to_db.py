@@ -5,13 +5,12 @@ import typing as tp
 
 from sqlalchemy import func
 
+from news.items import ArticleInfo
+
+sys.path.insert(1, "../../api/")
+
 from src.postgres_client import PostgresClient
 from src.models import Publication, PublicationSource, TopicInfo
-
-# for reading ArticleInfo from the file
-sys.path.insert(1, "../scrapper/news")
-
-from news.items import ArticleInfo
 
 
 def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     source_to_last_datetime = get_last_datetime_for_source(postgres_client)
     for cur_source in PublicationSource:
         assert isinstance(cur_source, PublicationSource)
-        filename = f"../data/{cur_source.value.lower()}_items.jsonl"
+        filename = f"../../data/{cur_source.value.lower()}_items.jsonl"
         cur_first_datetime = source_to_first_datetime[cur_source]
         cur_last_datetime = source_to_last_datetime[cur_source]
         if os.path.exists(filename):

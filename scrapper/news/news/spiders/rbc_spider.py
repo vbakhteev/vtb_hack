@@ -25,7 +25,7 @@ class RBCSpider(BaselineSpider):
                     link,
                     self.parse_article_website
                 )
-        elif os.getenv("SCRAP_ALL_DATA", None) is not None:
+        else:
             for start_url in self.start_urls:
                 yield scrapy.Request(
                     start_url,
