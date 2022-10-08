@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 
 from src import client
+from src import templates
+from src.preprocessing import feed
 from src.consts import SHOW_NUM_NEWS, ROLE_MAPPING
 
 
@@ -24,13 +26,5 @@ for tab, topic in zip(tabs, topics):
 
         publications = client.get_publications(topic_id=topic_id, num=SHOW_NUM_NEWS)
 
-        for publication in publications:
-            title = publication['title']
-            url = publication['url']
-            publication_datetime = publication['publication_datetime']
-
-            text = publication['text'].replace('\n', '').split()
-            description = ' '.join(text[:min(len(text), 15)]) + '...'
-
-            st.write(f"[{title}]({url}) {publication_datetime}")
-            st.write(description)
+        for html in feed(publications):
+            st.write(html, unsafe_allow_html=True)

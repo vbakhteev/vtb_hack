@@ -6,6 +6,7 @@ import seaborn as sns
 
 from src import search_client
 from src import templates
+from src.preprocessing import feed
 from src.consts import SHOW_NUM_NEWS, ROLE_MAPPING
 
 
@@ -32,11 +33,5 @@ if len(query):
                 unsafe_allow_html=True)
 
     # search results
-    for i, publication in enumerate(publications):
-        url = publication['url']
-        title = publication['title']
-        text = publication['text'].replace('\n', ' ').split()
-        highlights = ' '.join(text[:40]) + '...'
-        num_minutes = max(round(len(text) / 120), 1)
-
-        st.write(templates.search_result(i, url=url, title=title, highlights=highlights, author='', length=f'{num_minutes} минут'), unsafe_allow_html=True)
+    for html in feed(publications):
+        st.write(html, unsafe_allow_html=True)
