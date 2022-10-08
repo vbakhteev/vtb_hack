@@ -19,7 +19,7 @@ class NewsTopicAssessor:
         self.accounter_model = NewsTMModel()
         self.accounter_model.load(accounter_model_path)
         data = DataLoader().get_data_with_unnassigned_topics()
-        self.business_news = data[data["source"].isin(["RBC"])]
+        self.business_news = data[data["source"].isin(["RBC", "MY_BUSINESS"])]
         self.accounter_news = data[data["source"].isin(["BUH", "CONSULTANT"])]
 
     def get_topic_labels_for_businessman(self):

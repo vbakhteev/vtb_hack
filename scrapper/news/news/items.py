@@ -25,6 +25,7 @@ class NewWebsiteEnum(AutoName):
     BUH = auto()
     CONSULTANT = auto()
     HH = auto()
+    MY_BUSINESS = auto()
 
 
 class NewsTopicEnum(AutoName):

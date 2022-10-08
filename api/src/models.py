@@ -42,6 +42,7 @@ class PublicationSource(Enum):
     RBC = "RBC"
     BUH = "BUH"
     CONSULTANT = "CONSULTANT"
+    MY_BUSINESS = "MY_BUSINESS"
 
 
 def default_as_topic_name(context):
