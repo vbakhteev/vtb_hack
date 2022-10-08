@@ -87,3 +87,10 @@ class UseCases:
             for row in session.query(Publication).filter(Publication.topic_id == topic_id):
                 data.append("{:04d}-{:02d}".format(row.publication_datetime.year, row.publication_datetime.month))
         return Counter(data)
+
+    def get_topic_by_name(self, topic_name: str) -> tp.Optional[int]:
+        with self.db.session() as session:
+            cur_rows = session.query(TopicInfo).filter(TopicInfo.topic_name == topic_name).all()
+            if len(cur_rows) == 0:
+                return None
+            return cur_rows[0].id

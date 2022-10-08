@@ -30,6 +30,23 @@ services:
       postgres:
         condition: service_healthy
 
+  search_api:
+    image: search_api_image
+    container_name: search_api_container
+    build:
+      context: .
+      dockerfile: rec_engine/dockerfiles/Dockerfile_api
+    environment:
+      DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
+      GENERATE_MIGRATIONS: $GENERATE_MIGRATIONS
+    ports:
+      - 8001:8001
+    volumes:
+      - ./api/alembic:/app/alembic
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: library/postgres:14.2-alpine
     ports:

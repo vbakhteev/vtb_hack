@@ -4,9 +4,10 @@ WORKDIR /app
 
 RUN pip install --upgrade pip
 
-COPY requirements.txt requirements.txt
+COPY rec_engine/requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY rec_engine/ .
+COPY api/src src
 
 CMD ./start_api.sh

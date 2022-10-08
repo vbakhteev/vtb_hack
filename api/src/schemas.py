@@ -35,3 +35,14 @@ class TrendsResponseCountInfo(BaseModel):
 
 class TrendsResponse(BaseModel):
     frequency: tp.List[TrendsResponseCountInfo]
+
+
+class SearchRequest(BaseModel):
+    query: str
+    num: int = 5
+    role_name: tp.Literal["manager", "accountant"] = "manager"
+
+
+class SearchResponse(BaseModel):
+    similar_names: tp.List[str]
+    publications: tp.List[PublicationsResponse]
