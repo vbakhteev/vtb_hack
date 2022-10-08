@@ -27,7 +27,7 @@ def insert_deafult_topic_info_if_not_present(db: PostgresClient) -> None:
     with db.session() as session:
         is_present = session.query(TopicInfo).get(-2)
         if is_present is None:
-            session.add(TopicInfo(id=-2, topic_name="not relevant"))
+            session.add(TopicInfo(id=-2, topic_name="not labeled"))
 
 
 def get_first_datetime_for_source(db: PostgresClient) -> tp.Dict[PublicationSource, datetime.datetime]:

@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import scrapy
 
@@ -26,11 +27,12 @@ class BUHSpider(BaselineSpider):
                 cls.parse_article_website
             )
         i += 1
-        yield scrapy.Request(
-            cls.TEMPLATE_URL.format(i),
-            cls.parse,
-            cb_kwargs={"i": i}
-        )
+        if os.getenv("SCRAP_ALL_DATA", None) is not None:
+            yield scrapy.Request(
+                cls.TEMPLATE_URL.format(i),
+                cls.parse,
+                cb_kwargs={"i": i}
+            )
 
     @classmethod
     def parse_article_website(cls, response):

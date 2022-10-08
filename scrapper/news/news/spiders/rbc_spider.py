@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import scrapy
 
@@ -9,27 +10,31 @@ from ..items import NewWebsiteEnum, NewsTopicEnum
 class RBCSpider(BaselineSpider):
     name = "rbc"
     start_urls = [
-        "https://www.rbc.ru/short_news",
+        "https://trends.rbc.ru/trends/short_news?from=newsfeed_bar",
     ]
 
     TAG_TO_NEWS_TOPIC = {}
 
     def start_requests(self):
-        with open("../rbc_data/rbc_links.txt", "r") as f:
-            links = f.readlines()
-        for link in links:
-            link = link.strip()
-            yield scrapy.Request(
-                link,
-                self.parse_article_website
-            )
+        if os.getenv("SCRAP_FROM_TXT", None) is not None:
+            with open("../rbc_data/rbc_links.txt", "r") as f:
+                links = f.readlines()
+            for link in links:
+                link = link.strip()
+                yield scrapy.Request(
+                    link,
+                    self.parse_article_website
+                )
+        elif os.getenv("SCRAP_ALL_DATA", None) is not None:
+            for start_url in self.start_urls:
+                yield scrapy.Request(
+                    start_url,
+                    self.parse
+                )
 
     @classmethod
     def parse(cls, response, **kwargs):
-        pass
-        all_articles = response.css(".js-news-feed-item")
-        for article_info in all_articles:
-            article_link = article_info.css(".item__link::attr(href)").get()
+        for article_link in response.css(".js-item-link::attr(href)").extract()[::2]:
             yield scrapy.Request(
                 article_link,
                 cls.parse_article_website

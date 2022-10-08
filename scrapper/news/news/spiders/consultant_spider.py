@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import scrapy
 
@@ -29,12 +30,14 @@ class ConsultantSpider(BaselineSpider):
         "дек": 12,
     }
 
+    ACCOUNTANT_FILTER_COOKIE = "rlWyozSvoTIxH2AipTImVwc7VwNvBvWuL2AiqJ50LJ50VvjvZFV6VzW1MTqyqPW9YPWwo2kfLKOmMJEGL29jMKZvBag9sD"
+
     def start_requests(self):
         yield scrapy.Request(
             self.TEMPLATE_URL.format(1),
             self.parse,
             cookies={
-                "_settings": "rlWyozSvoTIxH2AipTImVwc7VwNvBvWuL2AiqJ50LJ50VvjvZFV6VzW1MTqyqPW9YPWwo2kfLKOmMJEGL29jMKZvBag9sD"
+                "_settings": self.ACCOUNTANT_FILTER_COOKIE
             }
         )
 
@@ -48,14 +51,15 @@ class ConsultantSpider(BaselineSpider):
                 cls.parse_article_website
             )
         i += 1
-        yield scrapy.Request(
-            cls.TEMPLATE_URL.format(i),
-            cls.parse,
-            cookies={
-                "_settings": "rlWyozSvoTIxH2AipTImVwc7VwNvBvWuL2AiqJ50LJ50VvjvZFV6VzW1MTqyqPW9YPWwo2kfLKOmMJEGL29jMKZvBag9sD"
-            },
-            cb_kwargs={"i": i},
-        )
+        if os.getenv("SCRAP_ALL_DATA", None) is not None:
+            yield scrapy.Request(
+                cls.TEMPLATE_URL.format(i),
+                cls.parse,
+                cookies={
+                    "_settings": cls.ACCOUNTANT_FILTER_COOKIE
+                },
+                cb_kwargs={"i": i},
+            )
 
     @classmethod
     def parse_article_website(cls, response):
