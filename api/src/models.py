@@ -44,6 +44,10 @@ class PublicationSource(Enum):
     CONSULTANT = "CONSULTANT"
 
 
+def default_as_topic_name(context):
+    return context.current_parameters.get('topic_name')
+
+
 class TopicInfo(Base):
     __tablename__ = "topic_info"
 
@@ -52,6 +56,8 @@ class TopicInfo(Base):
     topic_name = sqla.Column(sqla.String)
     for_accountant = sqla.Column(sqla.Boolean, default=False)
     for_businessman = sqla.Column(sqla.Boolean, default=False)
+
+    topic_name_display = sqla.Column(sqla.String, default=default_as_topic_name)
 
 
 class Publication(Base):
