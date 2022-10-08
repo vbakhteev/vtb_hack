@@ -19,7 +19,7 @@ slider = st.slider(
 
 all_topic_names = ['Спорт', 'Политика', 'Погода']
 topic_names = st.multiselect(
-    'What are your favorite colors',
+    'Выбрать темы для анализа',
     all_topic_names,
     all_topic_names,
 )
