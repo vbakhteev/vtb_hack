@@ -5,13 +5,12 @@ import typing as tp
 
 from sqlalchemy import func
 
+from news.items import ArticleInfo
+
+sys.path.insert(1, "../../api/")
+
 from src.postgres_client import PostgresClient
 from src.models import Publication, PublicationSource, TopicInfo
-
-# for reading ArticleInfo from the file
-sys.path.insert(1, "../scrapper/news")
-
-from news.items import ArticleInfo
 
 
 def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
@@ -19,15 +18,15 @@ def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
     with open(filename) as f:
         for line in f:
             data.append(ArticleInfo.parse_raw(line))
-    data = list(set(data))
+    data = sorted(list(set(data)), key=lambda x: x.release_time)
     return data
 
 
 def insert_deafult_topic_info_if_not_present(db: PostgresClient) -> None:
     with db.session() as session:
-        is_present = session.query(TopicInfo).get(-1)
+        is_present = session.query(TopicInfo).get(-2)
         if is_present is None:
-            session.add(TopicInfo(id=-1, topic_name="not relevant"))
+            session.add(TopicInfo(id=-2, topic_name="not labeled"))
 
 
 def get_first_datetime_for_source(db: PostgresClient) -> tp.Dict[PublicationSource, datetime.datetime]:
@@ -76,7 +75,7 @@ if __name__ == "__main__":
     source_to_last_datetime = get_last_datetime_for_source(postgres_client)
     for cur_source in PublicationSource:
         assert isinstance(cur_source, PublicationSource)
-        filename = f"../data/{cur_source.value.lower()}_items.jsonl"
+        filename = f"../../data/{cur_source.value.lower()}_items.jsonl"
         cur_first_datetime = source_to_first_datetime[cur_source]
         cur_last_datetime = source_to_last_datetime[cur_source]
         if os.path.exists(filename):
