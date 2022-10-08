@@ -14,13 +14,14 @@ st.title('Параметры')
 role = st.radio("Роль", ROLE_MAPPING.keys())
 role_name = ROLE_MAPPING[role]
 
-slider = st.slider(
+first_month = st.slider(
     'Считать тренд с какого месяца?',
     min_value=datetime(year=2020, month=10, day=1).date(),
     max_value=datetime.now().date(),
     step=timedelta(days=30),
     format="MM/YY",
 )
+first_month = str(first_month)[:7]
 
 all_topics = client.get_topics(role_name=role_name)
 topic_names = st.multiselect(
@@ -29,7 +30,12 @@ topic_names = st.multiselect(
     [topic['name'] for topic in all_topics],
 )
 
-topics_data = get_trend_data(topic_names, all_topics, client)
+topics_data = get_trend_data(
+    topic_names=topic_names,
+    all_topics=all_topics,
+    first_month=first_month,
+    client=client,
+)
 
 st.title('Аналитика')
 

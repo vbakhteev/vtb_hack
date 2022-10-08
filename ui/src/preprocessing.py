@@ -6,13 +6,17 @@ from sklearn.linear_model import LinearRegression
 from src.api_client import ApiClient
 
 
-def get_trend_data(topic_names: List[str], all_topics: List[dict], client: ApiClient):
+def get_trend_data(topic_names: List[str], all_topics: List[dict], first_month: str, client: ApiClient):
     topics_data = []
     for topic_name in topic_names:
         topic = [topic for topic in all_topics if topic_name == topic['name']][0]
         topic_id = topic['topic_id']
 
         frequency = client.get_trend(topic_id)
+        frequency = [x for x in frequency if x['month'] > first_month]
+        if len(frequency) < 2:
+            continue
+
         trend_value = compute_trend_value(
             [x['count'] for x in frequency]
         )
