@@ -1,3 +1,7 @@
+from collections import Counter
+import datetime
+import typing as tp
+
 from sqlalchemy.future import select
 
 from src.postgres_client import PostgresClient
@@ -5,6 +9,7 @@ from src.models import (
     User,
     UserType,
     Publication,
+    TopicInfo,
     EventType,
     Event,
 )
@@ -53,3 +58,32 @@ class UseCases:
                 event_type=EventType(event_type),
             )
             session.add(event)
+
+    def get_topics_for_role(self, role: tp.Literal["manager", "accountant"]) -> tp.List[tp.Tuple[int, str]]:
+        with self.db.session() as session:
+            ans = []
+            if role == "manager":
+                for row in session.query(TopicInfo).filter(TopicInfo.for_businessman):
+                    ans.append((row.id, row.topic_name))
+            elif role == "accountant":
+                for row in session.query(TopicInfo).filter(TopicInfo.for_accountant):
+                    ans.append((row.id, row.topic_name))
+            else:
+                raise RuntimeError("Incorrect role porvided")
+        return ans
+
+    def get_publications_by_topic(self, topic_id: int, num: int) -> tp.List[tp.Tuple[str, str, str, datetime.datetime]]:
+        ans = []
+        with self.db.session() as session:
+            for row in session.query(Publication).filter(
+                    Publication.topic_id == topic_id
+            ).order_by(Publication.publication_datetime.desc()).limit(num):
+                ans.append((row.title, row.url, row.text, row.publication_datetime))
+        return ans
+
+    def get_topic_occurrence_info(self, topic_id: int) -> tp.Dict[str, int]:
+        with self.db.session() as session:
+            data = []
+            for row in session.query(Publication).filter(Publication.topic_id == topic_id):
+                data.append("{:04d}-{:02d}".format(row.publication_datetime.year, row.publication_datetime.month))
+        return Counter(data)
