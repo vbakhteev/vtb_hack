@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class TopicsResponse(BaseModel):
     topic_id: int
-    topic_name: str
+    name: str
 
 
 class PublicationsResponse(BaseModel):
