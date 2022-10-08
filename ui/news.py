@@ -4,7 +4,7 @@ import seaborn as sns
 import pandas as pd
 
 
-role = st.radio("Кто ты?", ["Гендир", "Бухгалтер"])
+role = st.radio("Роль", ["Гендир", "Бухгалтер"])
 
 
 data = [
@@ -46,7 +46,6 @@ data = [
 
 
 trend = {
-    'trend_value': 0.8,
     'frequency': [
         {'month': '2022-07', 'count': 50},
         {'month': '2022-08', 'count': 100},
