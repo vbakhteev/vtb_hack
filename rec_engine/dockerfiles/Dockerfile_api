@@ -10,4 +10,4 @@ RUN pip install -r requirements.txt
 COPY rec_engine/ .
 COPY api/src src
 
-CMD ./start_api.sh
+CMD python3 -m src_api.main

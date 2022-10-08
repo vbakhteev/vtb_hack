@@ -7,13 +7,10 @@ import uvicorn
 from src.postgres_client import PostgresClient
 from src.use_cases import UseCases
 from src.schemas import (
-    TopicsRequest,
     TopicsResponse,
-    PublicationsRequest,
     PublicationsResponse,
     TrendsResponse,
     TrendsResponseCountInfo,
-    TrendsRequest
 )
 
 
@@ -28,14 +25,14 @@ async def startup_event():
 
 
 @app.get("/topics", response_model=tp.List[TopicsResponse])
-def topics(topic_info: TopicsRequest):
-    relevant_topics = use_cases.get_topics_for_role(topic_info.role_name)
-    return [TopicsResponse(topic_id=topic_id, topic_name=topic_name) for topic_id, topic_name in relevant_topics]
+def topics(role_name: tp.Literal["manager", "accountant"]):
+    relevant_topics = use_cases.get_topics_for_role(role_name)
+    return [TopicsResponse(topic_id=topic_id, name=name) for topic_id, name in relevant_topics]
 
 
 @app.get("/publications", response_model=tp.List[PublicationsResponse])
-def publications(publication_info: PublicationsRequest):
-    relevant_publications = use_cases.get_publications_by_topic(publication_info.topic_id, publication_info.num)
+def publications(topic_id: int, num: int):
+    relevant_publications = use_cases.get_publications_by_topic(topic_id, num)
     return [
         PublicationsResponse(title=title, url=url, text=text, publication_datetime=publication_datetime)
         for title, url, text, publication_datetime in relevant_publications
@@ -43,8 +40,8 @@ def publications(publication_info: PublicationsRequest):
 
 
 @app.get("/trend", response_model=TrendsResponse)
-def trend(trend_info: TrendsRequest):
-    frequencies = use_cases.get_topic_occurrence_info(trend_info.topic_id)
+def trend(topic_id: int):
+    frequencies = use_cases.get_topic_occurrence_info(topic_id)
     return TrendsResponse(
         frequency=[TrendsResponseCountInfo(month=date, count=cnt) for date, cnt in frequencies.items()]
     )
