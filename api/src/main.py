@@ -27,7 +27,7 @@ async def startup_event():
 @app.get("/topics", response_model=tp.List[TopicsResponse])
 def topics(role_name: tp.Literal["manager", "accountant"]):
     relevant_topics = use_cases.get_topics_for_role(role_name)
-    return [TopicsResponse(topic_id=topic_id, topic_name=topic_name) for topic_id, topic_name in relevant_topics]
+    return [TopicsResponse(topic_id=topic_id, name=name) for topic_id, name in relevant_topics]
 
 
 @app.get("/publications", response_model=tp.List[PublicationsResponse])
