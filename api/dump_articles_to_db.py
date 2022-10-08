@@ -19,7 +19,7 @@ def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
     with open(filename) as f:
         for line in f:
             data.append(ArticleInfo.parse_raw(line))
-    data = list(set(data))
+    data = sorted(list(set(data)), key=lambda x: x.release_time)
     return data
 
 
