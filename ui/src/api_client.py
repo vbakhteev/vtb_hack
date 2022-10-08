@@ -3,11 +3,14 @@ from typing import Literal
 from urllib.parse import urljoin
 
 
+Role = Literal["manager", "accountant"]
+
+
 class ApiClient:
     def __init__(self, url):
         self.url = url
 
-    def get_topics(self, role_name: Literal["manager", "accountant"]):
+    def get_topics(self, role_name: Role):
         topics = self._get(
             'topics',
             {'role_name': role_name},
@@ -29,7 +32,7 @@ class ApiClient:
         )
         return trend["frequency"]
     
-    def search(self, query, num: int):
+    def search(self, query, num: int, role_name: Role):
         publications = [
             {
                 'title': 'Расчеты и налоги в октябре: на что обратить внимание',
