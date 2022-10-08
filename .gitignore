@@ -2,5 +2,5 @@
 __pycache__/
 data/*
 !data/.gitkeep
-weights/*
-!weights/.gitkeep
+rec_engine/weights/*
+!rec_engine/weights/.gitkeep
