@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD streamlit run news.py
+CMD streamlit run news.py --server.address=0.0.0.0 --server.port=8501
