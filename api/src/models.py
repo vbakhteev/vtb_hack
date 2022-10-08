@@ -50,6 +50,8 @@ class TopicInfo(Base):
     id = sqla.Column(sqla.Integer, primary_key=True, index=True)
 
     topic_name = sqla.Column(sqla.String)
+    for_accountant = sqla.Column(sqla.Boolean, default=False)
+    for_businessman = sqla.Column(sqla.Boolean, default=False)
 
 
 class Publication(Base):

@@ -1,14 +1,19 @@
 import os
 
+from fastapi import FastAPI
+import typing as tp
 import uvicorn
-from fastapi import FastAPI, HTTPException
 
 from src.postgres_client import PostgresClient
 from src.use_cases import UseCases
 from src.schemas import (
-    RegisterRequest,
-    SaveEventRequest,
-    RecommendResponse,
+    TopicsRequest,
+    TopicsResponse,
+    PublicationsRequest,
+    PublicationsResponse,
+    TrendsResponse,
+    TrendsResponseCountInfo,
+    TrendsRequest
 )
 
 
@@ -22,45 +27,28 @@ async def startup_event():
     postgres_client.connect()
 
 
-@app.get("/recommend", response_model=RecommendResponse)
-def recommend(user_id: int):
-    publication_id, title, summary, url = use_cases.recommend(
-        user_id=user_id,
+@app.get("/topics", response_model=tp.List[TopicsResponse])
+def topics(topic_info: TopicsRequest):
+    relevant_topics = use_cases.get_topics_for_role(topic_info.role_name)
+    return [TopicsResponse(topic_id=topic_id, topic_name=topic_name) for topic_id, topic_name in relevant_topics]
+
+
+@app.get("/publications", response_model=tp.List[PublicationsResponse])
+def publications(publication_info: PublicationsRequest):
+    relevant_publications = use_cases.get_publications_by_topic(publication_info.topic_id, publication_info.num)
+    print(relevant_publications)
+    return [
+        PublicationsResponse(title=title, url=url, text=text, publication_datetime=publication_datetime)
+        for title, url, text, publication_datetime in relevant_publications
+    ]
+
+
+@app.get("/trend", response_model=TrendsResponse)
+def trend(trend_info: TrendsRequest):
+    frequencies = use_cases.get_topic_occurrence_info(trend_info.topic_id)
+    return TrendsResponse(
+        frequency=[TrendsResponseCountInfo(month=date, count=cnt) for date, cnt in frequencies.items()]
     )
-    return RecommendResponse(
-        publication_id=publication_id,
-        title=title,
-        summary=summary,
-        url=url,
-    )
-
-
-@app.get("/publication_url")
-def publication_url(publication_id: int):
-    url = use_cases.publication_url(
-        publication_id=publication_id,
-    )
-    return url
-
-
-@app.post("/register")
-def register(request: RegisterRequest):
-    use_cases.register_or_update_role(
-        user_id=request.user_id,
-        full_name=request.full_name,
-        user_type=request.user_type,
-    )
-    return "OK"
-
-
-@app.post("/save_event")
-def save_event(request: SaveEventRequest):
-    use_cases.save_event(
-        user_id=request.user_id,
-        publication_id=request.publication_id,
-        event_type=request.event_type,
-    )
-    return "OK"
 
 
 if __name__ == "__main__":

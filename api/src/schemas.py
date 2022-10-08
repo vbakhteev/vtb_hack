@@ -1,21 +1,37 @@
-from typing import Literal
+import datetime
+import typing as tp
 from pydantic import BaseModel
 
 
-class RegisterRequest(BaseModel):
-    user_id: int
-    full_name: str
-    user_type: Literal["manager", "accountant"]
+class TopicsRequest(BaseModel):
+    role_name: tp.Literal["manager", "accountant"]
 
 
-class RecommendResponse(BaseModel):
-    publication_id: int
+class TopicsResponse(BaseModel):
+    topic_id: int
+    topic_name: str
+
+
+class PublicationsRequest(BaseModel):
+    topic_id: int
+    num: int = 5
+
+
+class PublicationsResponse(BaseModel):
     title: str
-    summary: str
     url: str
+    text: str
+    publication_datetime: datetime.datetime
 
 
-class SaveEventRequest(BaseModel):
-    user_id: int
-    publication_id: int
-    event_type: Literal["like", "dislike", "click"]
+class TrendsRequest(BaseModel):
+    topic_id: int
+
+
+class TrendsResponseCountInfo(BaseModel):
+    month: str
+    count: int
+
+
+class TrendsResponse(BaseModel):
+    frequency: tp.List[TrendsResponseCountInfo]
