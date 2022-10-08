@@ -6,7 +6,7 @@ import typing as tp
 from sqlalchemy import func
 
 from src.postgres_client import PostgresClient
-from src.models import Publication, PublicationSource
+from src.models import Publication, PublicationSource, TopicInfo
 
 # for reading ArticleInfo from the file
 sys.path.insert(1, "../scrapper/news")
@@ -21,6 +21,13 @@ def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
             data.append(ArticleInfo.parse_raw(line))
     data = list(set(data))
     return data
+
+
+def insert_deafult_topic_info_if_not_present(db: PostgresClient) -> None:
+    with db.session() as session:
+        is_present = session.query(TopicInfo).get(-1)
+        if is_present is None:
+            session.add(TopicInfo(id=-1, topic_name="not relevant"))
 
 
 def get_first_datetime_for_source(db: PostgresClient) -> tp.Dict[PublicationSource, datetime.datetime]:
@@ -55,6 +62,7 @@ def dump_data_to_db(db: PostgresClient, data: tp.List[ArticleInfo]) -> None:
             url=cur_sample.article_url,
             image_url=cur_sample.img_url,
             source=PublicationSource(cur_sample.website),
+            tags=cur_sample.tags
         )
         with db.session() as session:
             session.add(publication)
@@ -63,6 +71,7 @@ def dump_data_to_db(db: PostgresClient, data: tp.List[ArticleInfo]) -> None:
 if __name__ == "__main__":
     postgres_client = PostgresClient(os.getenv("DB_URL"))
     postgres_client.connect()
+    insert_deafult_topic_info_if_not_present(postgres_client)
     source_to_first_datetime = get_first_datetime_for_source(postgres_client)
     source_to_last_datetime = get_last_datetime_for_source(postgres_client)
     for cur_source in PublicationSource:
