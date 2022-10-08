@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  tg_bot:
+    image: tg_bot_image
+    container_name: tg_bot_container
+    build:
+      context: ./bot
+    environment:
+      BOT_TOKEN: $BOT_TOKEN
+      API_URL: http://api:8000
+    volumes:
+      - ./resources/bot:/app/bot_data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: api_image
+    container_name: api_container
+    build:
+      context: ./api
+    environment:
+      DB_URL: "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/postgresdb"
+      GENERATE_MIGRATIONS: $GENERATE_MIGRATIONS
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api/alembic:/app/alembic
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: library/postgres:14.2-alpine
+    ports:
+      - 5432:5432
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: "postgresdb"
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./resources/db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d postgresdb" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin_container
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   ports:
+  #     - "5050:80"
