@@ -37,4 +37,4 @@ fig = plot_trends(topics_data)
 st.pyplot(fig)
 
 chart_data = get_occurences_data(topics_data)
-st.line_chart(data=chart_data, x='month')
+st.line_chart(data=chart_data, x='months')

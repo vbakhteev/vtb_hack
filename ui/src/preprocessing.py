@@ -10,7 +10,7 @@ def get_trend_data(topic_names: List[str], all_topics: List[dict], client: ApiCl
     topics_data = []
     for topic_name in topic_names:
         topic = [topic for topic in all_topics if topic_name == topic['name']][0]
-        topic_id = topic['id']
+        topic_id = topic['topic_id']
 
         frequency = client.get_trend(topic_id)
         trend_value = compute_trend_value(

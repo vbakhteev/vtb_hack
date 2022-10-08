@@ -10,12 +10,11 @@ def plot_trends(topics_data):
     df_trend = df_trend.sort_values('trend_value', ascending=False)
     df_trend['positive'] = df_trend['trend_value'] > 0
 
-    fig = plt.figure(figsize=(12,8))
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = plt.subplots(1, 1, figsize=(20, 20))
     sns.barplot(
         data=df_trend,
         x='trend_value',
-        y='topic_name',
+        y='name',
         palette=df_trend.positive.map({True: 'g', False: 'r'}),
         ax=ax,
     )
