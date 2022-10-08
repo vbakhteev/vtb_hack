@@ -29,11 +29,15 @@ class NewsTopicAssessor:
         return self.accounter_model.topic_model.generate_topic_labels()
 
     def label_business_news(self):
+        if len(self.business_news) == 0:
+            return None
         topics, probs = self.businessman_model.predict(self.business_news)
         self.business_news['topic_id'] = topics
         return self.business_news
 
     def label_accounter_news(self):
+        if len(self.accounter_news) == 0:
+            return None
         topics, probs = self.accounter_model.predict(self.accounter_news)
         self.accounter_news['topic_id'] = topics
         return self.accounter_news
@@ -96,8 +100,11 @@ if __name__ == '__main__':
 
     business_news = news_topic_assessor.label_business_news()
     accountant_news = news_topic_assessor.label_accounter_news()
-    accountant_news["topic_id"] = accountant_news["topic_id"].apply(lambda x: x + 50 if x > -1 else -1)
+    if accountant_news is not None:
+        accountant_news["topic_id"] = accountant_news["topic_id"].apply(lambda x: x + 50 if x > -1 else -1)
     for df in [business_news, accountant_news]:
+        if df is None:
+            continue
         for _, row in df.iterrows():
             doc_id = row["id"]
             topic_id = row["topic_id"]
