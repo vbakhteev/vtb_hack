@@ -33,18 +33,18 @@ async def startup_event():
 
 
 @app.get("/search", response_model=SearchResponse)
-def search(search_info: SearchRequest):
-    if search_info.role_name == "manager":
+def search(query: str, num: int, role_name: tp.Literal["manager", "accountant"]):
+    if role_name == "manager":
         news_model = businessman_model
-    elif search_info.role_name == "accountant":
+    elif role_name == "accountant":
         news_model = accounter_model
     else:
         raise RuntimeError()
     assert news_model is not None
-    assert search_info.num > 0
-    _, topic_names = news_model.find_topics(search_info.query)
+    assert num > 0
+    _, topic_names = news_model.find_topics(query)
     topic_id = use_cases.get_topic_by_name(topic_names[0])
-    relevant_publications = use_cases.get_publications_by_topic(topic_id, search_info.num)
+    relevant_publications = use_cases.get_publications_by_topic(topic_id, num)
     return SearchResponse(
         similar_names=topic_names,
         publications=[
