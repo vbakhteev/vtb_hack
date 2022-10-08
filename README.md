@@ -6,7 +6,6 @@
 # Запуск постоянных компонент системы
 docker-compose --env-file .env up
 
-
 cd scrapers
 bash build_docker.sh
 
