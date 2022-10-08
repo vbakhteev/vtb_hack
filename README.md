@@ -26,7 +26,7 @@ https://drive.google.com/file/d/1H6hPRxKHWhBKvMfTsSsn4awT5KG7X3xo/view?usp=shari
 
 ```
 cd ../rec_engine
-bash build_docker.sh
+bash build_docker_tagging.sh
 bash run_docker_tagging.sh
 ```
 

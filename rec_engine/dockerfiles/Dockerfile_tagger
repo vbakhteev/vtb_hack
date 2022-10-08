@@ -9,4 +9,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ./start.sh
+CMD ./start_tagging.sh
