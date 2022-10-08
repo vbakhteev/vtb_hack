@@ -36,7 +36,6 @@ def topics(topic_info: TopicsRequest):
 @app.get("/publications", response_model=tp.List[PublicationsResponse])
 def publications(publication_info: PublicationsRequest):
     relevant_publications = use_cases.get_publications_by_topic(publication_info.topic_id, publication_info.num)
-    print(relevant_publications)
     return [
         PublicationsResponse(title=title, url=url, text=text, publication_datetime=publication_datetime)
         for title, url, text, publication_datetime in relevant_publications

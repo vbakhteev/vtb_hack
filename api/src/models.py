@@ -69,7 +69,7 @@ class Publication(Base):
     image_url = sqla.Column(sqla.String, default=None)
     source = sqla.Column(sqla.Enum(PublicationSource))
 
-    topic_id = sqla.Column(sqla.Integer, sqla.ForeignKey("topic_info.id"), default=-1)
+    topic_id = sqla.Column(sqla.Integer, sqla.ForeignKey("topic_info.id"), default=-2)
     is_duplicate = sqla.Column(sqla.Boolean, default=None)
     tags = sqla.Column(sqla.ARRAY(sqla.String))
     features = sqla.Column(sqla.JSON)
