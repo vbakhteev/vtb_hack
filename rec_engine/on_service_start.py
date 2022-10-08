@@ -25,7 +25,7 @@ class NewsTopicAssessor:
         return self.business_news
 
     def label_accounter_news(self):
-        topics, probs = self.accounter_model.predict(self.business_news)
+        topics, probs = self.accounter_model.predict(self.accounter_news)
         self.accounter_news['topic_id'] = topics
         return self.accounter_news
 
