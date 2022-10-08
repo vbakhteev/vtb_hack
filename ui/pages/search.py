@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src import client
+from src import search_client
 from src import templates
 from src.consts import SHOW_NUM_NEWS, ROLE_MAPPING
 
@@ -19,7 +19,7 @@ query = st.text_input('Введите запрос')
 if len(query):
     st.write(templates.load_css(), unsafe_allow_html=True)
     start_time = time.time()
-    publications, tags = client.search(query, num=SHOW_NUM_NEWS, role_name=role_name)
+    publications, tags = search_client.search(query, num=SHOW_NUM_NEWS, role_name=role_name)
     took = time.time() - start_time
 
     total_hits = len(publications)
