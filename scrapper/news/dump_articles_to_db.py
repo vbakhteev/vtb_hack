@@ -1,6 +1,6 @@
 import datetime
-import sys
 import os
+import sys
 import typing as tp
 
 from sqlalchemy import func
@@ -11,6 +11,35 @@ sys.path.insert(1, "../../api/")
 
 from src.postgres_client import PostgresClient
 from src.models import Publication, PublicationSource, TopicInfo
+
+
+class FuzzyDeduplicator:
+    def __init__(
+            self,
+            jaccard_threshold: float = 0.7,
+    ):
+        self.jaccard_threshold = jaccard_threshold
+
+        self.processed_texts = []
+
+    def jaccard(self, text: str, candidate: str) -> float:
+        text_words = text.split()
+        candidate_words = candidate.split()
+        return len(set(text_words).intersection(set(candidate_words))) / len(set(text_words).union(set(candidate_words)))
+
+    def __call__(self, text) -> tp.Optional[str]:
+        is_duplicate = False
+        for candidate_idx in range(len(self.processed_texts)):
+            candidate = self.processed_texts[candidate_idx]
+            if self.jaccard(text, candidate) > self.jaccard_threshold:
+                is_duplicate = True
+                break
+
+        self.processed_texts.append(text)
+        if is_duplicate:
+            return candidate
+
+        return None
 
 
 def read_jsonlines_file(filename: str) -> tp.List[ArticleInfo]:
@@ -70,6 +99,7 @@ def dump_data_to_db(db: PostgresClient, data: tp.List[ArticleInfo]) -> None:
 if __name__ == "__main__":
     postgres_client = PostgresClient(os.getenv("DB_URL"))
     postgres_client.connect()
+    deduplicator = FuzzyDeduplicator()
     insert_deafult_topic_info_if_not_present(postgres_client)
     source_to_first_datetime = get_first_datetime_for_source(postgres_client)
     source_to_last_datetime = get_last_datetime_for_source(postgres_client)
@@ -84,4 +114,9 @@ if __name__ == "__main__":
                 sample for sample in samples
                 if sample.release_time > cur_last_datetime or cur_first_datetime > sample.release_time
             ]
-            dump_data_to_db(postgres_client, samples)
+            new_samples = []
+            for sample in samples:
+                out = deduplicator(sample.title + sample.text)
+                if out is None:
+                    new_samples.append(sample)
+            dump_data_to_db(postgres_client, new_samples)
